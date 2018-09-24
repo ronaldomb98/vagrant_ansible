@@ -1,0 +1,125 @@
+---
+
+- hosts: all
+  tasks:
+    - name: Installing git  and zsh
+      become: true
+      apt: 
+        name: "{{ item }}" 
+        state: latest 
+        update_cache: yes
+      with_items:
+        - git
+        - zsh
+        - git-core
+    - name: Installing apache
+      become: true
+      apt: 
+        name: apache2 
+        state: latest 
+        update_cache: yes
+    - name: Configuring oh-my-zsh
+      become: true
+      git:
+        repo: git://github.com/robbyrussell/oh-my-zsh
+        dest: /home/vagrant/.oh-my-zsh
+    - name: Setting up template to oh my zsh
+      become: true
+      copy: 
+        src: /home/vagrant/.oh-my-zsh/templates/zshrc.zsh-template
+        dest: /home/vagrant/.zshrc
+    - name: Configuring default theme from Oh my zsh
+      become: true
+      replace:
+        path: /home/vagrant/.zshrc
+        regexp: 'ZSH_THEME="robbyrussell"'
+        replace: 'ZSH_THEME="kardan"'
+    - name: Change default bash
+      become: true
+      user:
+        force: true
+        name: vagrant
+        shell: /bin/zsh
+    - name: Instaling mysql with dependencies
+      become: true
+      apt: 
+        name: "{{ item }}"
+        state: present
+        update_cache: true
+      with_items: 
+        - mysql-server
+        - python-mysqldb
+    - name: Create my first database
+      become: true
+      mysql_db:
+        name: myfirstdatabase
+        state: present
+        login_user: root
+    - name: Change server name
+      become: true
+      replace:
+        path: /etc/apache2/sites-available/000-default.conf
+        regexp: '#ServerName www.example.com'
+        replace: 'ServerName localhost'
+    - name: Adding PPA to php5
+      become: true
+      apt_repository:
+        validate_certs: no
+        repo: 'ppa:ondrej/php'
+        state: present
+    - name: Installing apache2 dependencies
+      become: true
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: true
+      with_items:
+        - apache2-utils
+        - php5.6
+        - php5.6-mysql
+        - php5.6-gd
+        - php5.6-mcrypt
+        - php5.6-mbstring
+        - libapache2-mod-php5.6
+    - name: Reload apache2
+      become: true
+      service:
+        name: apache2
+        state: reloaded
+    - name: Change apache root
+      become: true
+      replace:
+        path: /etc/apache2/sites-available/000-default.conf
+        regexp: 'DocumentRoot /var/www/html'
+        replace: 'DocumentRoot /home/vagrant/www'
+    - name: Set www directory vagrant as a default root directory
+      become: true
+      blockinfile:
+        path: /etc/apache2/sites-available/000-default.conf
+        insertafter: 'DocumentRoot /home/vagrant/www'
+        content: |
+          <Directory "/home/vagrant/www">
+            Options Indexes FollowSymLinks
+            AllowOverride all
+            Require all granted
+          </Directory>
+    - name: enabled mod_rewrite
+      become: true
+      apache2_module:
+        name: rewrite
+        state: present
+    - name: Create example .htaccess for angular projects
+      file:
+        path: /home/vagrant/utils/
+        state: directory
+    - name: Create example .htaccess for angular projects
+      copy:
+        dest: /home/vagrant/utils/angular.htaccess
+        content: |
+          RewriteEngine on
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+
+          # not rewrite css, js and images
+          RewriteCond %{REQUEST_URI} !\.(?:css|js|map|jpe?g|gif|png)$ [NC]
+          RewriteRule ^(.*)$ /index.html?path=$1 [
