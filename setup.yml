@@ -49,12 +49,6 @@
       with_items: 
         - mysql-server
         - python-mysqldb
-    - name: Create my first database
-      become: true
-      mysql_db:
-        name: myfirstdatabase
-        state: present
-        login_user: root
     - name: Change server name
       become: true
       replace:
@@ -79,13 +73,9 @@
         - php5.6-mysql
         - php5.6-gd
         - php5.6-mcrypt
+        - php5.6-xml
         - php5.6-mbstring
         - libapache2-mod-php5.6
-    - name: Reload apache2
-      become: true
-      service:
-        name: apache2
-        state: reloaded
     - name: Change apache root
       become: true
       replace:
@@ -123,3 +113,58 @@
           # not rewrite css, js and images
           RewriteCond %{REQUEST_URI} !\.(?:css|js|map|jpe?g|gif|png)$ [NC]
           RewriteRule ^(.*)$ /index.html?path=$1 [
+    - name: Create user project one name ronaldo
+      become: true
+      mysql_user:
+        name: ronaldo
+        priv: '*.*:ALL'
+        password: ronaldo123123
+        state: present
+    - name: Create projectronaldoone database
+      become: true
+      mysql_db:
+        name: projectronaldoone
+        state: present
+        login_user: ronaldo
+        login_password: ronaldo123123
+    - name: Download composer
+      become: true
+      get_url:
+        url: https://getcomposer.org/installer
+        dest: /tmp/installer
+      tags: composer
+    - name: install composer
+      become: true
+      shell: cat /tmp/installer | php -- --install-dir=/usr/local/bin
+      args:
+        creates: /usr/local/bin/composer
+      tags: composer
+    - name: Rename composer.phar to composer
+      become: true
+      shell: mv /usr/local/bin/composer.phar /usr/local/bin/composer
+      args:
+        creates: /usr/local/bin/composer
+      tags: composer
+    - name: Make composer executable
+      become: true
+      file: 
+        path: /usr/local/bin/composer
+        mode: a+x
+        state: file
+      tags: composer
+    - name: Require drush via Composer globally.
+      composer:
+        command: require
+        global_command: yes
+        arguments: "drush/drush:8.1.8"
+    - name: Creating a link for drush
+      become: true
+      file:
+        src: "/home/vagrant/.config/composer/vendor/bin/drush"
+        dest: "/usr/local/bin/drush"
+        state: link
+    - name: Reload apache2
+      become: true
+      service:
+        name: apache2
+        state: reloaded
