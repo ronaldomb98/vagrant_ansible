@@ -1,0 +1,48 @@
+---
+
+- name: OhMyZsh -> Registrating ohmyzsh template path
+  stat: path=/home/vagrant/.oh-my-zsh
+  register: ohmyzsh_template
+
+- name: OhMyZsh -> Registrating ohmyzsh rc path
+  stat: path=/home/vagrant/.zshrc
+  register: ohmyzsh_rc
+
+- name: OhMyZsh -> Installing zsh
+  become: true
+  apt: 
+    name: zsh 
+    state: present
+
+- name: OhMyZsh -> Configuring oh-my-zsh
+  become: true
+  git:
+    repo: git://github.com/robbyrussell/oh-my-zsh
+    dest: /home/vagrant/.oh-my-zsh
+  when: ohmyzsh_template.stat.exists == False
+
+- name: OhMyZsh -> Setting up template to oh my zsh
+  become: true
+  copy: 
+    src: /home/vagrant/.oh-my-zsh/templates/zshrc.zsh-template
+    dest: /home/vagrant/.zshrc
+  when: ohmyzsh_rc.stat.exists == False
+
+- name: OhMyZsh -> read content .zshrc
+  shell: cat /home/vagrant/.zshrc
+  register: content_zshrc
+
+- name: OhMyZsh -> Configuring default theme from Oh my zsh
+  become: true
+  replace:
+    path: /home/vagrant/.zshrc
+    regexp: 'ZSH_THEME="robbyrussell"'
+    replace: 'ZSH_THEME="kardan"'
+  when: content_zshrc.stdout.find('ZSH_THEME="kardan"') != -1
+
+- name: OhMyZsh -> Change default bash
+  become: true
+  user:
+    force: true
+    name: vagrant
+    shell: /bin/zsh

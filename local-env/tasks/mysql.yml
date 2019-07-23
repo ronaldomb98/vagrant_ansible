@@ -1,0 +1,27 @@
+---
+
+- name: MySQL -> Instaling dependencies
+  apt: 
+    name: ['mysql-server', 'python-mysqldb']
+    state: present
+    update_cache: true
+  
+- name: MySQL -> Copy Config File
+  template: src=../config/my.cnf dest=/etc/mysql/my.cnf owner=root mode=0600
+  notify: restart mysql
+
+- name: MySQL -> Create users 
+  mysql_user:
+    name: "{{item.user | default(item)}}"
+    priv: '*.*:ALL'
+    password: "{{ item.passowrd | default(item)}}"
+    state: present
+  loop: "{{databases}}"
+
+- name: MySQL -> Create databases
+  mysql_db:
+    name: "{{item.database | default(item)}}"
+    state: present
+    login_user: "{{item.user | default(item)}}"
+    login_password: "{{ item.passowrd | default(item)}}"
+  loop: "{{databases}}"

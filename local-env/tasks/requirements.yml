@@ -1,0 +1,22 @@
+---
+
+- name: Requirements -> Install base packages
+  apt:
+    pkg: "{{ item }}"
+    state: present
+  loop:
+    - python-minimal
+    - aptitude
+    - git
+    - git-core
+    - tree
+    - zip
+    - unzip
+    - curl
+    - supervisor
+    - python-software-properties
+    - build-essential
+    - curl
+
+- name: Requirements -> Modify hosts
+  template: src=../config/hosts dest=/etc/hosts mode=0600

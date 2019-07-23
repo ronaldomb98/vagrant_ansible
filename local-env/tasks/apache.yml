@@ -1,0 +1,26 @@
+---
+
+- name: Apache2 -> Installing apache
+  apt: 
+    name: apache2 
+    state: present 
+    update_cache: yes
+
+- name: Apache2 -> Create custom Host config
+  template:
+    src: ../config/apache_site.conf
+    dest: "/etc/apache2/sites-available/{{ item.hostname }}.conf"
+    mode: 0644
+    owner: root
+    group: root
+  loop: "{{ sites }}"
+  notify: restart apache2
+  
+- name: Apache2 -> Remove default sites
+  file: path={{item}} state=absent
+  loop: ['/etc/apache2/sites-available/000-default.conf', '/etc/apache2/sites-available/default-ssl.conf']
+
+- name: Apache2 -> Activate sites
+  command: a2ensite {{ item.hostname }}
+  loop: "{{ sites }}"
+  notify: restart apache2
