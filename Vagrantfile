@@ -13,9 +13,10 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder "./apps/", "/var/www/", owner: "www-data", group: "www-data"
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "4000"
-    vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    #vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
     vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-    vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+    #vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+    #vb.customize ["modifyvm", :id, "--nictype2", "virtio" ]
   end
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "playbook.yml"
