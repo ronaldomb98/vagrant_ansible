@@ -2,42 +2,74 @@
 
 - name: PHP -> Install Ondrej PHP PPA
   apt_repository:
-    repo: 'ppa:ondrej/php'
+    repo: ppa:ondrej/php
     state: present
     update_cache: yes
-- name: PHP -> Install PHP Modules
-  apt:
-    name: "{{ item }}"
-    state: present
-  loop:
-    - php7.2
-    - libapache2-mod-php7.2
-    - libargon2-0
-    - libsodium23
-    - libssl1.1
-    - php7.2-cli
-    - php7.2-common
-    - php7.2-json
-    - php7.2-opcache
-    - php7.2-readline
-    - php-pear 
-    - php7.2-curl 
-    - php7.2-dev 
-    - php7.2-gd 
-    - php7.2-mbstring 
-    - php7.2-zip 
-    - php7.2-mysql 
-    - php7.2-xml
+
+- name: PHP -> Installing php7.2...
+  apt: pkg=php7.2 state=present
+
+- name: PHP -> Installing libapache2-mod-php7.2...
+  apt: pkg=libapache2-mod-php7.2 state=present
+
+- name: PHP -> Installing libargon2-0...
+  apt: pkg=libargon2-0 state=present
+
+- name: PHP -> Installing libsodium23...
+  apt: pkg=libsodium23 state=present
+
+- name: PHP -> Installing libssl1.1...
+  apt: pkg=libssl1.1 state=present
+
+- name: PHP -> Installing php7.2-cli...
+  apt: pkg=php7.2-cli state=present
+
+- name: PHP -> Installing php7.2-common...
+  apt: pkg=php7.2-common state=present
+
+- name: PHP -> Installing php7.2-json...
+  apt: pkg=php7.2-json state=present
+
+- name: PHP -> Installing php7.2-opcache...
+  apt: pkg=php7.2-opcache state=present
+
+- name: PHP -> Installing php7.2-readline...
+  apt: pkg=php7.2-readline state=present
+
+- name: PHP -> Installing php-pear ...
+  apt: pkg=php-pear state=present
+
+- name: PHP -> Installing php7.2-curl ...
+  apt: pkg=php7.2-curl state=present
+
+- name: PHP -> Installing php7.2-dev ...
+  apt: pkg=php7.2-dev state=present
+
+- name: PHP -> Installing php7.2-gd ...
+  apt: pkg=php7.2-gd state=present
+
+- name: PHP -> Installing php7.2-mbstring ...
+  apt: pkg=php7.2-mbstring state=present
+
+- name: PHP -> Installing php7.2-zip ...
+  apt: pkg=php7.2-zip state=present
+
+- name: PHP -> Installing php7.2-mysql ...
+  apt: pkg=php7.2-mysql state=present
+
+- name: PHP -> Installing php7.2-xml...
+  apt: pkg=php7.2-xml state=present
 
 - name: PHP -> Conguring composer path
   stat: path={{composer_path}}
   register: composer_folder
 
-- name: PHP -> Install Composer
+- name: PHP -> Clonning Composer
   get_url:
     url: https://getcomposer.org/installer
     dest: /tmp
     mode: 0440
-- name: PHP -> Install Composer
+
+- name: PHP -> Installing Composer
   shell: php /tmp/installer && mv composer.phar {{composer_path}} creates={{composer_path}}
   when: composer_folder.stat.isdir is not defined

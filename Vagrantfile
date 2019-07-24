@@ -7,7 +7,8 @@
 # you're doing.
 Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/xenial64"
-  config.vm.network "forwarded_port", guest: 80, host: 80
+  #config.vm.network "forwarded_port", guest: 80, host: 80
+  config.vm.network "private_network", ip: "33.33.33.33"
   config.vm.box_check_update = false
   config.vm.synced_folder "./apps/", "/var/www/", owner: "www-data", group: "www-data"
   config.vm.provider "virtualbox" do |vb|

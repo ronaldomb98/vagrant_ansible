@@ -1,22 +1,40 @@
 ---
 
-- name: Requirements -> Install base packages
-  apt:
-    pkg: "{{ item }}"
-    state: present
-  loop:
-    - python-minimal
-    - aptitude
-    - git
-    - git-core
-    - tree
-    - zip
-    - unzip
-    - curl
-    - supervisor
-    - python-software-properties
-    - build-essential
-    - curl
+- name: Requirements -> Installing python-minimal...
+  apt: pkg=python-minimal state=present
+
+- name: Requirements -> Installing aptitude...
+  apt: pkg=aptitude state=present
+
+- name: Requirements -> Installing git...
+  apt: pkg=git state=present
+
+- name: Requirements -> Installing git-core...
+  apt: pkg=git-core state=present
+
+- name: Requirements -> Installing tree...
+  apt: pkg=tree state=present
+
+- name: Requirements -> Installing zip...
+  apt: pkg=zip state=present
+
+- name: Requirements -> Installing unzip...
+  apt: pkg=unzip state=present
+
+- name: Requirements -> Installing curl...
+  apt: pkg=curl state=present
+
+- name: Requirements -> Installing supervisor...
+  apt: pkg=supervisor state=present
+
+- name: Requirements -> Installing python-software-properties...
+  apt: pkg=python-software-properties state=present
+
+- name: Requirements -> Installing build-essential...
+  apt: pkg=build-essential state=present
+
+- name: Requirements -> Installing curl...
+  apt: pkg=curl state=present
 
 - name: Requirements -> Modify hosts
   template: src=../config/hosts dest=/etc/hosts mode=0600

@@ -5,6 +5,11 @@
     name: apache2 
     state: present 
     update_cache: yes
+- name: Apache2 -> Enable rewrite module
+  apache2_module:
+    name: rewrite
+    state: present
+    ignore_configcheck: True
 
 - name: Apache2 -> Create custom Host config
   template:
@@ -15,10 +20,14 @@
     group: root
   loop: "{{ sites }}"
   notify: restart apache2
-  
+
 - name: Apache2 -> Remove default sites
   file: path={{item}} state=absent
-  loop: ['/etc/apache2/sites-available/000-default.conf', '/etc/apache2/sites-available/default-ssl.conf']
+  loop:
+    - /etc/apache2/sites-available/000-default.conf
+    - /etc/apache2/sites-available/default-ssl.conf
+    - /etc/apache2/sites-enabled/000-default.conf
+    - /etc/apache2/sites-enabled/default-ssl.conf
 
 - name: Apache2 -> Activate sites
   command: a2ensite {{ item.hostname }}

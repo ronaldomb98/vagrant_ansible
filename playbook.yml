@@ -13,7 +13,7 @@
         { hostname: 'app.local', document_root: '/var/www/html' },
         { hostname: 'test.local', document_root: '/var/www/test' }
     ]
-    
+
   tasks:
     - import_tasks: ./local-env/tasks/requirements.yml
       when: install_requirements == true
@@ -23,7 +23,7 @@
         composer_path: /usr/local/bin/composer
       when: install_php == true
 
-    - import_tasks: ./local-env/tasks/oh-my-zsh.yml
+    - import_tasks: ./local-env/tasks/ohmyzsh.yml
       when: install_ohmyzsh == true
 
     - import_tasks: ./local-env/tasks/mysql.yml
@@ -48,4 +48,3 @@
       service: name=mysql state=restarted
     - name: restart apache2
       service: name=apache2 state=restarted
-
