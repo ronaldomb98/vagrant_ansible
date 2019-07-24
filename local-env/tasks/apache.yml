@@ -5,6 +5,7 @@
     name: apache2 
     state: present 
     update_cache: yes
+
 - name: Apache2 -> Enable rewrite module
   apache2_module:
     name: rewrite
@@ -33,3 +34,8 @@
   command: a2ensite {{ item.hostname }}
   loop: "{{ sites }}"
   notify: restart apache2
+
+- name: Apache2 -> Adding vagrant user to www-data group
+  user:
+    name: vagrant
+    groups: www-data

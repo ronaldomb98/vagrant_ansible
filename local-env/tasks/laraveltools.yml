@@ -1,0 +1,19 @@
+---
+
+- name: Laraveltools -> Installing laravel/installer
+  composer:
+    command: require
+    global_command: true
+    arguments: laravel/installer
+
+- name: Laraveltools -> Installing laravel/lumen-installer
+  composer:
+    command: require
+    global_command: true
+    arguments: laravel/lumen-installer
+    
+- name: Laraveltools -> Installing laravel/envoy
+  composer:
+    command: require
+    global_command: true
+    arguments: laravel/envoy
