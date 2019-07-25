@@ -13,7 +13,7 @@
     command: require
     global_command: yes
     arguments: laravel/lumen-installer
-    
+
 - name: Composer Tools -> Installing laravel/envoy
   become: false
   composer:
@@ -21,13 +21,21 @@
     global_command: yes
     arguments: laravel/envoy
 
+- name: Composer Tools -> Reading content .zshrc
+  shell: cat /home/vagrant/.zshrc
+  register: content_zshrc
+
+
 - name: Composer Tools -> Creating rc variable for composer globals
   lineinfile:
     path: /home/vagrant/.zshrc
-    line: "LOCAL_COMPOSER=/home/vagrant/.config/composer/vendor/bin/"
+    line: "LOCAL_COMPOSER={{ local_composer }}"
+  when: content_zshrc.stdout.find('LOCAL_COMPOSER') == -1
+  register: local_composer_registration
 
 - name: Composer Tools -> Adding to PATH variable
   lineinfile:
     path: /home/vagrant/.zshrc
     line: "export PATH=$PATH:$LOCAL_COMPOSER"
+  when: local_composer_registration.changed == true
     

@@ -3,17 +3,18 @@
 - hosts: all
   become: true
   vars:
-    install_requirements: true
-    install_ohmyzsh: true
-    install_php: true
-    install_mysql: true
-    install_apache: true
-    install_nodejs: true
+    install_requirements: false
+    install_ohmyzsh: false
+    install_php: false
+    install_mysql: false
+    install_apache: false
+    install_nodejs: false
     install_composertools: true
     sites: [
         { hostname: 'app.local', document_root: '/var/www/html' },
         { hostname: 'test.local', document_root: '/var/www/test' }
     ]
+    local_composer: /home/vagrant/.config/composer/vendor/bin/
 
   tasks:
     - import_tasks: ./local-env/tasks/requirements.yml
