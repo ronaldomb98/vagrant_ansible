@@ -1,7 +1,7 @@
 ---
 
 - name: OhMyZsh -> Registrating ohmyzsh template path
-  stat: path=/home/vagrant/.oh-my-zsh
+  stat: path={{ zsh_dir }}
   register: ohmyzsh_template
 
 - name: OhMyZsh -> Registrating ohmyzsh rc path
@@ -15,26 +15,32 @@
 
 - name: OhMyZsh -> Configuring oh-my-zsh
   git:
-    repo: git://github.com/robbyrussell/oh-my-zsh
-    dest: /home/vagrant/.oh-my-zsh
+    repo: 'https://github.com/robbyrussell/oh-my-zsh.git'
+    dest: "{{ zsh_dir }}"
   when: ohmyzsh_template.stat.exists == False
 
-- name: OhMyZsh -> Setting up template to oh my zsh
-  copy: 
-    src: /home/vagrant/.oh-my-zsh/templates/zshrc.zsh-template
-    dest: /home/vagrant/.zshrc
-  when: ohmyzsh_rc.stat.exists == False
+- name: OhMyZsh -> Clonning zsh-syntax highlighting
+  git:
+    repo: 'https://github.com/zsh-users/zsh-syntax-highlighting.git'
+    dest: "{{ zsh_dir }}/plugins/zsh-syntax-highlighting"
 
-- name: OhMyZsh -> read content .zshrc
-  shell: cat /home/vagrant/.zshrc
-  register: content_zshrc
+- name: OhMyZsh -> Installing ruby-full
+  apt: pkg=ruby-full state=present
+
+# - name: OhMyZsh -> Clonning fonts
+#   git:
+#     repo: https://github.com/ryanoasis/nerd-fonts.git
+#     dest: /tmp/nerd-fonts
+
+# - name: OhMyZsh -> Installing Fonts
+#   shell: sh /tmp/nerd-fonts/install.sh
 
 - name: OhMyZsh -> Configuring default theme from Oh my zsh
-  replace:
-    path: /home/vagrant/.zshrc
-    regexp: 'ZSH_THEME="robbyrussell"'
-    replace: 'ZSH_THEME="kardan"'
-  when: content_zshrc.stdout.find('ZSH_THEME="robbyrussell"') != -1
+  template: src=../config/.zshrc dest=/home/vagrant/.zshrc
+  # when: ohmyzsh_rc.stat.exists == False
+
+- name: OhMyZsh -> Installing colors
+  shell: gem install colorls
 
 - name: OhMyZsh -> Change default bash
   user:

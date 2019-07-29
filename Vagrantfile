@@ -10,16 +10,27 @@ Vagrant.configure("2") do |config|
   #config.vm.network "forwarded_port", guest: 80, host: 80
   config.vm.network "private_network", ip: "33.33.33.33"
   config.vm.box_check_update = false
-  config.vm.synced_folder "./apps/", "/var/www/", owner: "www-data", group: "www-data"
+  config.vm.synced_folder "../apps/", "/var/www/", owner: "www-data", group: "www-data"
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "4000"
-    #vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
     vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-    #vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
-    #vb.customize ["modifyvm", :id, "--nictype2", "virtio" ]
+    vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+    
+    vb.customize ["modifyvm", :id, "--natdnsproxy2", "on"]
+    vb.customize ["modifyvm", :id, "--natdnshostresolver2", "on"]
+    vb.customize ["modifyvm", :id, "--nictype2", "virtio"]
+
+    vb.customize ["modifyvm", :id, "--natdnsproxy3", "on"]
+    vb.customize ["modifyvm", :id, "--natdnshostresolver3", "on"]
+    vb.customize ["modifyvm", :id, "--nictype3", "virtio"]
+    
+    vb.customize ["modifyvm", :id, "--natdnsproxy4", "on"]
+    vb.customize ["modifyvm", :id, "--natdnshostresolver4", "on"]
+    vb.customize ["modifyvm", :id, "--nictype4", "virtio"]
   end
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "playbook.yml"
-    ansible.version = "2.8.2"
+
   end
 end

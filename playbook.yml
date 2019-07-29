@@ -3,49 +3,48 @@
 - hosts: all
   become: true
   vars:
-    install_requirements: false
-    install_ohmyzsh: false
-    install_php: false
-    install_mysql: false
-    install_apache: false
-    install_nodejs: false
+    install_requirements: true
+    install_ohmyzsh: true
+    install_php: true
     install_composertools: true
+    install_mysql: true
+    install_apache: true
+    install_nodejs: true
+    composer_path: /usr/local/bin/composer
+    local_composer: /home/vagrant/.config/composer/vendor/bin/
     sites: [
-        { hostname: 'app.local', document_root: '/var/www/html' },
+        { hostname: 'app.local', document_root: '/var/www/teacher-talk' },
         { hostname: 'test.local', document_root: '/var/www/test' }
     ]
-    local_composer: /home/vagrant/.config/composer/vendor/bin/
+    zsh_theme: kardan
+    zsh_dir: /home/vagrant/.oh-my-zsh
+    databases: ['database']
+    nodejs_version: "10.x"
+    nodejs_install_npm_user: "{{ ansible_ssh_user }}"
+    npm_config_prefix: "/usr/local/lib/npm"
+    npm_config_unsafe_perm: "false"
+    nodejs_npm_global_packages: []
 
   tasks:
     - import_tasks: ./local-env/tasks/requirements.yml
       when: install_requirements == true
-
-    - import_tasks: ./local-env/tasks/php.yml
-      vars:
-        composer_path: /usr/local/bin/composer
-      when: install_php == true
-
+      
     - import_tasks: ./local-env/tasks/ohmyzsh.yml
       when: install_ohmyzsh == true
+
+    - import_tasks: ./local-env/tasks/php.yml
+      when: install_php == true
 
     - import_tasks: ./local-env/tasks/composertools.yml
       when: install_composertools == true
 
     - import_tasks: ./local-env/tasks/mysql.yml
-      vars:
-        databases: ['database']
       when: install_mysql == true
 
     - import_tasks: ./local-env/tasks/apache.yml
       when: install_apache == true
 
     - import_tasks: ./local-env/tasks/nodejs.yml
-      vars:
-        nodejs_version: "10.x"
-        nodejs_install_npm_user: "{{ ansible_ssh_user }}"
-        npm_config_prefix: "/usr/local/lib/npm"
-        npm_config_unsafe_perm: "false"
-        nodejs_npm_global_packages: []
       when: install_nodejs == true
 
   handlers:
