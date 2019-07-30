@@ -13,7 +13,7 @@
     composer_path: /usr/local/bin/composer
     local_composer: /home/vagrant/.config/composer/vendor/bin/
     sites: [
-        { hostname: 'app.local', document_root: '/var/www/teacher-talk' },
+        { hostname: 'app.local', document_root: '/var/www/html' },
         { hostname: 'test.local', document_root: '/var/www/test' }
     ]
     zsh_theme: kardan
